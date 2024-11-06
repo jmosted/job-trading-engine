@@ -1,0 +1,66 @@
+Cuando la prueba unitaria tiene error de inyeccion HttpClient
+https://www.thecodebuzz.com/angular-null-injector-error-no-provider-for-httpclient/
+
+Tutorial pruebas Unitarias, integracion, Aceptacion
+https://www.adictosaltrabajo.com/2017/06/13/tests-unitarios-de-integracion-y-de-aceptacion-en-angular-con-jasmine-karma-y-protractor/
+
+correr pruebas unitarias.
+//php vendor/phpunit/phpunit/phpunit --filter CustomerTest --testdox
+
+Para iniciar
+composer install
+php artisan migrate:fresh --seed
+
+correr Lumen.(en la ruta del proyecto lumen)
+php -S localhost:8000 -t public
+
+correr angular(<name_proy>/resources/frontend)
+npm run start
+
+
+las demas credenciales estan en esta ruta: (x)
+https://my-json-server.typicode.com/brianpando/mockJsonServer/clients
+
+para el recaptcha se usara una nueva libreria
+---> /resources/frontend/angular/-->npm install ng-recaptcha --save
+
+usando variables de entorno
+--> ubicar el archivo .env.example en windows ejecutar este comando [cp .env.ex(tab) .env] ó 
+{mejor dicho copiar el archivo .env.example con el nombre .env en la misma ubicacion de .env.example}
+--> luego pegar esto :  API_URL_UNIVERSAL=https://www.api-usoft.online/UniversalAPI
+    en lo ultimo
+---> npm install ng-recaptcha --save
+
+Para produccion:
+cd resources/frontend/angular
+npm run build:prod
+
+descargar en nube, composer install. copiar el .env
+configurar el virtualhost del apache apuntando a public del proyecto lumen de acuedo al dominio
+
+IMPORTANTE!
+crear variable de entorno para la comunicación con Firebase Cloud Messaging (FCM)
+-> en linux/mac os
+    export GOOGLE_APPLICATION_CREDENTIALS="/home/user/Downloads/service-account-file.json"
+-> en windows (powershell)
+    $env:GOOGLE_APPLICATION_CREDENTIALS="C:\Users\username\Downloads\service-account-file.json"
+
+NECESARIO!
+poblar la tabla statuses de la db con el seeder, ejecuta lo siguiente:
+-> php artisan db:seed --class=StatusSeeder
+-> php artisan db:seed --class=StandarizeDataSeeder
+
+PRUEBAS DE INTEGRACION
+Para ejecutar correctamente las pruebas de integracion, crea una base de datos llamada: testing_platform
+Una vez echo eso, procede a ejercitar las pruebas: 
+
+PARA QUE FUNCIONEN BIEN LAS QUEUE
+en .env poner: QUEUE_CONNECTION=database
+
+#########################################
+Para configurar un sistema de colas y pueda ejecutar las colas generadas por la APP
+se configuró Supervisor, siguiendo el tutorial: 
+ -> https://www.zentao.pm/blog/use-Supervisor-to-manage-Laravel-queue-416.html
+
+* Los archivos de configuración por cada app se encuentran en: /etc/supervisor/
+* El archivo de configuración de Supervisor está en: /etc/supervisord.conf
