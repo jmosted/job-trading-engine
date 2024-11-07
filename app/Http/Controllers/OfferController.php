@@ -6,14 +6,16 @@ use App\Models\Offer;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use App\Repository\IOfferRepository;
+use App\Services\IOfferService;
 
 class OfferController extends BaseController {
     
     private $repository;
     private $service;
 
-    public function __construct(IOfferRepository $repository) {
+    public function __construct(IOfferRepository $repository, IOfferService $service) {
         $this->repository = $repository; 
+        $this->service = $service;
     }
 
     public function index(Request $request)
@@ -68,5 +70,27 @@ class OfferController extends BaseController {
     {
         // Aquí eliminarías la oferta con el ID especificado
         return response()->json(['msg' => 'Ofertas']);
+    }
+
+    public function requestOffer(Request $request)
+    {
+        try {
+            $params = $request->all();
+            $resp = $this->service->requestOffer($params);        
+            return response()->json(['error' => false, 'code' => 29,'data' =>  $resp, 'type'=>'1','msg' => 'Procesado correctamente']);
+        } catch (\Exception $e) {
+            return response()->json(['error' => false, 'code' => 10,'data' => null, 'type'=>'1','msg' => $e->getMessage()],500);
+        }
+    }
+
+    public function assignOffer(Request $request)
+    {
+        try {
+            $params = $request->all();
+            $resp = $this->service->assignOffer($params);        
+            return response()->json(['error' => false, 'code' => 29,'data' => $resp, 'type'=>'1','msg' => 'Procesado correctamente']);
+        } catch (\Exception $e) {
+            return response()->json(['error' => false, 'code' => 10,'data' => null, 'type'=>'1','msg' => $e->getMessage()],500);
+        }
     }
 }

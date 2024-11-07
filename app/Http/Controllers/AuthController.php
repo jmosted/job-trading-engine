@@ -58,18 +58,17 @@ class AuthController extends Controller
     }
 
     public function register(Request $request){
-
-        $this->validate($request, [
-            'name' => 'required|string',
-            'lastname' => 'required|string',
-            'email' => 'required|email|unique:users',
-            'password' => 'required|confirmed',
-            'identification_number' => 'required|string',
-            'identification_type' => 'required|string',
-            'favorite_phrase' => 'required|string'
-        ]);
-        //dd($request);
         try {
+            $this->validate($request, [
+                'name' => 'required|string',
+                'lastname' => 'required|string',
+                'email' => 'required|email|unique:users',
+                'password' => 'required|confirmed',
+                'identification_number' => 'required|string',
+                'identification_type' => 'required|string',
+                'favorite_phrase' => 'required|string'
+            ]);
+            //dd($request);
             $user = User::where('email', $request->input('email'))->first();
             if ($user) {
                 return response()->json(['error' => true, 'code' => 10, 'data' => null, 'type' => '1','msg'=>'Email ya fue registrado'], 404);

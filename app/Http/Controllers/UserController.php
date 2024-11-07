@@ -38,7 +38,7 @@ class UserController extends BaseController {
         }
     }
 
-    public function update(Request $request, $id) {
+    public function update(Request $request) {
         try {
             $params = $request->all();
             $user = $this->repository->save($params);
