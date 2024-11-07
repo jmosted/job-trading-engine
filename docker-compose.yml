@@ -1,0 +1,47 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: lumen-app
+    image: job_trading_engine
+    ports:
+      - "8080:8080"  # Puerto en el que se expondrá la aplicación
+    volumes:
+      - .:/var/www/html  # Montar el directorio de la aplicación dentro del contenedor
+    networks:
+      - lumen-net
+    depends_on:
+      - mysql
+    environment:
+      DB_CONNECTION: mysql
+      DB_HOST: junction.proxy.rlwy.net:39793/railway
+      DB_PORT: 3306
+      DB_DATABASE: railway
+      DB_USERNAME: root
+      DB_PASSWORD: hLTyxFTsQiKpCNgduOaOmppDSCoGvNxH
+
+  mysql:
+    image: mysql:8.0
+    container_name: mysql-db
+    environment:
+      MYSQL_ROOT_PASSWORD: hLTyxFTsQiKpCNgduOaOmppDSCoGvNxH
+      MYSQL_DATABASE: railway
+      MYSQL_USER: root
+      MYSQL_PASSWORD: hLTyxFTsQiKpCNgduOaOmppDSCoGvNxH
+    volumes:
+      - lumen-mysql-data:/var/lib/mysql
+    networks:
+      - lumen-net
+    ports:
+      - "3306:3306"  # Puerto en el que MySQL estará disponible
+
+networks:
+  lumen-net:
+    driver: bridge
+
+volumes:
+  lumen-mysql-data:
+    driver: local

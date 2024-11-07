@@ -64,3 +64,17 @@ se configuró Supervisor, siguiendo el tutorial:
 
 * Los archivos de configuración por cada app se encuentran en: /etc/supervisor/
 * El archivo de configuración de Supervisor está en: /etc/supervisord.conf
+
+Dockerizar:
+
+--> Construir
+docker-compose build
+
+--> Iniciar sesion
+docker login
+
+--> crear tag
+docker tag job_trading_engine:latest josermn132/job_trading_engine:latest
+
+--> publicar
+docker push josermn132/job_trading_engine:latest

@@ -9,10 +9,14 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Laravel\Lumen\Auth\Authorizable;
 use Tymon\JWTAuth\Contracts\JWTSubject;
+use \Illuminate\Support\Facades\Log;
 
 class User extends Model implements AuthenticatableContract, AuthorizableContract, JWTSubject
 {
     use Authenticatable, Authorizable, HasFactory;
+    protected $primaryKey = 'id';
+    public $incrementing = false;
+    protected $keyType = 'string';
 
     /**
      * The attributes that are mass assignable.
@@ -20,7 +24,7 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
      * @var string[]
      */
     protected $fillable = [
-        'username','name', 'lastname','email','identification_number','identification_type','failed_attempts','status','block_date','is_block','favorite_phrase'
+        'id','username','name', 'lastname','email','identification_number','identification_type','failed_attempts','status','block_date','is_block','favorite_phrase'
     ];
 
     /**
@@ -32,6 +36,10 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
         'password',
     ];
 
+    protected $casts = [
+        'id' => 'string',
+    ];
+
     public function getJWTIdentifier()
     {
         return $this->getKey();
@@ -40,6 +48,7 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
     public function getJWTCustomClaims()
     {
         return [
+            'user_id' => $this->getJWTIdentifier(),
             'username' => $this->username,
             'name' => $this->name,
             'lastname' => $this->lastname,

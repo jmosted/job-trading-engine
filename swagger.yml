@@ -1,0 +1,376 @@
+openapi: 3.0.0
+info:
+  title: Job Trading Engine API
+  description: API para la gestión de usuarios, categorías y ofertas en el Job Trading Engine
+  version: 1.0.0
+
+servers:
+  - url: http://localhost:8000
+    description: Servidor local
+
+paths:
+  /:
+    get:
+      summary: Inicio del servicio
+      description: Devuelve un mensaje de bienvenida al Job Trading Engine.
+      responses:
+        '200':
+          description: Mensaje de bienvenida
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: "Job trading engine"
+
+  /api/register:
+    post:
+      summary: Registro de un nuevo usuario
+      description: Permite registrar un nuevo usuario en el sistema.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name: 
+                  type: string
+                lastname: 
+                  type: string
+                email:
+                  type: string
+                password:
+                  type: string
+                password_confirmation:
+                  type: string
+                identification_number:
+                  type: string
+                identification_type:
+                  type: string
+                favorite_phrase:
+                  type: string
+              required:
+                - name
+                - lastname
+                - email
+                - password
+                - password_confirmation
+                - identification_number
+                - identification_type
+                - favorite_phrase
+      responses:
+        '201':
+          description: Usuario registrado con éxito
+        '400':
+          description: Error en la solicitud
+
+  /api/login:
+    post:
+      summary: Login de usuario
+      description: Permite a un usuario autenticarse en el sistema.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                password:
+                  type: string
+              required:
+                - email
+                - password
+      responses:
+        '200':
+          description: Usuario autenticado con éxito
+        '400':
+          description: Error en la solicitud
+
+  /api/category:
+    get:
+      summary: Obtener categorías
+      description: Recupera una lista de categorías disponibles.
+      responses:
+        '200':
+          description: Lista de categorías
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                    name:
+                      type: string
+
+    post:
+      summary: Crear una nueva categoría
+      description: Solo accesible para administradores. Crea una nueva categoría.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+              required:
+                - name
+      responses:
+        '201':
+          description: Categoría creada con éxito
+        '400':
+          description: Error en la solicitud
+
+    delete:
+      summary: Eliminar una categoría
+      description: Solo accesible para administradores. Elimina una categoría.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: integer
+              required:
+                - id
+      responses:
+        '200':
+          description: Categoría eliminada con éxito
+        '400':
+          description: Error en la solicitud
+
+  /api/users:
+    get:
+      summary: Obtener usuarios
+      description: Recupera una lista de usuarios.
+      responses:
+        '200':
+          description: Lista de usuarios
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                    name:
+                      type: string
+                    email:
+                      type: string
+
+    post:
+      summary: Crear un nuevo usuario
+      description: Permite crear un nuevo usuario.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                email:
+                  type: string
+                password:
+                  type: string
+              required:
+                - name
+                - email
+                - password
+      responses:
+        '201':
+          description: Usuario creado con éxito
+        '400':
+          description: Error en la solicitud
+
+  /api/users/getInfo/{id}:
+    get:
+      summary: Obtener información de un usuario
+      description: Recupera la información detallada de un usuario por su ID.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID del usuario
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Información del usuario
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                  name:
+                    type: string
+                  email:
+                    type: string
+        '404':
+          description: Usuario no encontrado
+
+  /api/users/getByToken:
+    get:
+      summary: Obtener usuario por token
+      description: Recupera la información del usuario actual mediante un token.
+      responses:
+        '200':
+          description: Información del usuario
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                  name:
+                    type: string
+                  email:
+                    type: string
+
+  /api/offer:
+    get:
+      summary: Obtener ofertas
+      description: Recupera una lista de ofertas disponibles.
+      responses:
+        '200':
+          description: Lista de ofertas
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                    title:
+                      type: string
+                    description:
+                      type: string
+
+    post:
+      summary: Crear una nueva oferta
+      description: Permite crear una nueva oferta de trabajo.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                description:
+                  type: string
+                category_id:
+                  type: integer
+                user_id:
+                  type: integer
+              required:
+                - title
+                - description
+                - category_id
+                - user_id
+      responses:
+        '201':
+          description: Oferta creada con éxito
+        '400':
+          description: Error en la solicitud
+
+  /api/offer/getInfo/{id}:
+    get:
+      summary: Obtener información de una oferta
+      description: Recupera la información detallada de una oferta por su ID.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID de la oferta
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Información de la oferta
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                  title:
+                    type: string
+                  description:
+                    type: string
+        '404':
+          description: Oferta no encontrada
+
+  /api/offer/getByUserId/{user}:
+    get:
+      summary: Obtener ofertas por usuario
+      description: Recupera una lista de ofertas asociadas a un usuario.
+      parameters:
+        - name: user
+          in: path
+          required: true
+          description: ID del usuario
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Lista de ofertas
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                    title:
+                      type: string
+                    description:
+                      type: string
+
+  /api/offer/getByCategoryId/{category}:
+    get:
+      summary: Obtener ofertas por categoría
+      description: Recupera una lista de ofertas asociadas a una categoría.
+      parameters:
+        - name: category
+          in: path
+          required: true
+          description: ID de la categoría
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Lista de ofertas
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                    title:
+                      type: string
+                    description:
+                      type: string
