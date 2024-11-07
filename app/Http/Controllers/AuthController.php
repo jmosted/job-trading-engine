@@ -87,7 +87,8 @@ class AuthController extends Controller
             $plainPassword = $request->input('password');
             $user_register->password = app('hash')->make($plainPassword);
             $user_register->save();
-            return response()->json(['error' => false, 'code' => 29,'data' => ['user'=> $user], 'type'=>'1','msg' => 'Procesado correctamente'], 201);
+            $user = User::where('email', $request->input('email'))->first();
+            return response()->json(['error' => false, 'code' => 29,'data' => ['user'=> $user_register], 'type'=>'1','msg' => 'Procesado correctamente'], 201);
 
         } catch (\Exception $e) {
             //return error message

@@ -9,7 +9,7 @@ class OfferRequest extends Model{
     public $timestamps = true;
  
     protected $fillable = [
-        'id','name','user'
+        'id','user_id','offer_id','status'
     ];
 
 

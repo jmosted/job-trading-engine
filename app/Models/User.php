@@ -47,8 +47,8 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
 
     public function getJWTCustomClaims()
     {
-        return [
-            'user_id' => $this->getJWTIdentifier(),
+        $user_data = [
+            'id' => $this->getJWTIdentifier(),
             'username' => $this->username,
             'name' => $this->name,
             'lastname' => $this->lastname,
@@ -57,6 +57,8 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
             'status' => $this->status
             // Agrega aquí más campos que desees incluir
         ];
+        
+        return ['user' => $user_data];
     }
 
     public function hasRole($role){

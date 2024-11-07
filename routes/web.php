@@ -24,7 +24,7 @@ $router->group(['middleware'=>'api'], function () use ($router) {
     $router->delete("/api/users/{id}", "UserController@remove");
     $router->get('/api/users/getByToken', 'UserController@getByToken');
 
-    $router->get("/api/offer", "OfferController@index");
+    $router->get("/api/offers", "OfferController@index");
     $router->get("/api/offer/getInfo/{id}", "OfferController@offer");
     $router->post("/api/offer", "OfferController@save");
     $router->delete("/api/offer/{id}", "OfferController@remove");

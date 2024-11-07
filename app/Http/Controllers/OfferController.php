@@ -10,10 +10,10 @@ use App\Repository\IOfferRepository;
 class OfferController extends BaseController {
     
     private $repository;
+    private $service;
 
-    public function __construct(IOfferRepository $repository)
-    {
-        $this->repository=$repository;
+    public function __construct(IOfferRepository $repository) {
+        $this->repository = $repository; 
     }
 
     public function index(Request $request)
@@ -21,7 +21,7 @@ class OfferController extends BaseController {
         try {
             $params = $request->all();
             $offers = $this->repository->list($params);
-            return response()->json(['error' => false, 'code' => 29,'data' => ['users' => $offers], 'type'=>'1','msg' => 'Procesado correctamente']);
+            return response()->json(['error' => false, 'code' => 29,'data' => ['offers' => $offers], 'type'=>'1','msg' => 'Procesado correctamente']);
         } catch (\Exception $e) {
             return $this->handleErrorResponse($e);
         }
@@ -33,7 +33,7 @@ class OfferController extends BaseController {
         try {
             $params = $request->all();
             $user = $this->repository->offer($id);
-            return response()->json(['error' => false, 'code' => 29,'data' => ['users' => $user], 'type'=>'1','msg' => 'Procesado correctamente']);
+            return response()->json(['error' => false, 'code' => 29,'data' => ['offer' => $user], 'type'=>'1','msg' => 'Procesado correctamente']);
         } catch (\Exception $e) {
             return $this->handleErrorResponse($e);
         }
@@ -45,8 +45,7 @@ class OfferController extends BaseController {
         try {
             $params = $request->all();
             $resp = $this->repository->save($params);        
-            return response()->json($resp);
-            
+            return response()->json(['error' => false, 'code' => 29,'data' => ['offer' => $resp], 'type'=>'1','msg' => 'Procesado correctamente']);
         } catch (\Exception $e) {
             return response()->json(['error' => false, 'code' => 10,'data' => null, 'type'=>'1','msg' => $e->getMessage()],500);
         }
