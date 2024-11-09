@@ -29,16 +29,19 @@ class OfferRepository implements IOfferRepository{
             }
             else $o = Offer::create($data);
 
-            if($offer_image && array_key_exists("id",$offer_image) ){
-                OfferImage::find($data['id'])->update($data);
-            }else{
-                $offer_image["offer_id"]=$o->id;
-                $offer_image["user_id"]=$data['user_id'];
-                OfferImage::create($offer_image);
+            foreach ($offer_image as $image) {
+                $image['image']='';
+                if ($image && array_key_exists("id", $image)) {
+                    OfferImage::find($image['id'])->update($image);
+                } else {
+                    $image["offer_id"] = $o->id;
+                    $image["user_id"] = $data['user_id'];
+                    OfferImage::create($image);
+                }
             }
 
             $image_data = OfferImage::where('offer_id', $o->id)->orderBy('created_at', 'desc')->first();
-            $o['image_data'] = $image_data;
+            //$o['image_data'] = $image_data;
             return $o;
         } catch (\Exception $e)
         {

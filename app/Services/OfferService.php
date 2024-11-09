@@ -47,4 +47,4 @@ class OfferService implements IOfferService {
     public function destroy($id) {
         $this->repository->destroy($id);
     }
-}
+}   
