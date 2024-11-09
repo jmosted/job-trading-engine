@@ -66,7 +66,8 @@ class AuthController extends Controller
                 'password' => 'required|confirmed',
                 'identification_number' => 'required|string',
                 'identification_type' => 'required|string',
-                'favorite_phrase' => 'required|string'
+                'favorite_phrase' => 'required|string',
+                'cellphone' => 'required|string'
             ]);
             //dd($request);
             $user = User::where('email', $request->input('email'))->first();
@@ -85,6 +86,7 @@ class AuthController extends Controller
             $user_register->favorite_phrase = $request->input('favorite_phrase');
             $plainPassword = $request->input('password');
             $user_register->password = app('hash')->make($plainPassword);
+            $user_register->cellphone = $request->input('cellphone');
             $user_register->save();
             $user = User::where('email', $request->input('email'))->first();
             return response()->json(['error' => false, 'code' => 29,'data' => ['user'=> $user_register], 'type'=>'1','msg' => 'Procesado correctamente'], 201);

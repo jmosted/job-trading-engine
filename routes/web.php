@@ -11,11 +11,13 @@ $router->group(['middleware'=>'cors1'], function() use($router){
 $router->group(['middleware'=>'api'], function () use ($router) {
     // Matches "/api/register
     ///$router->post('login', 'AuthController@login');
-    $router->group(['middleware'=> 'role'], function() use($router){
-        $router->post("/api/category",   "CategoryController@save");
-        $router->delete("/api/category",   "CategoryController@remove");
-    });
-    
+    // $router->group(['middleware'=> 'role'], function() use($router){
+    //     $router->post("/api/category",   "CategoryController@save");
+    //     $router->delete("/api/category",   "CategoryController@remove");
+    // });
+
+    $router->post("/api/category",   "CategoryController@save");
+    $router->delete("/api/category",   "CategoryController@remove");
     $router->get("/api/category",   "CategoryController@index");
     
     $router->get("/api/users", "UserController@index");
@@ -30,6 +32,8 @@ $router->group(['middleware'=>'api'], function () use ($router) {
     $router->delete("/api/offer/{id}", "OfferController@remove");
     $router->get("/api/offer/getByUserId/{user}", "OfferController@getByUser");
     $router->get("/api/offer/getByCategoryId/{category}", "OfferController@getByCategory");
+
+    $router->get("/api/offer/image/{offer}", "OfferController@getImageByOfferId");
 });
 
 

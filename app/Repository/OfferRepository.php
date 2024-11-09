@@ -30,7 +30,10 @@ class OfferRepository implements IOfferRepository{
             else $o = Offer::create($data);
 
             foreach ($offer_image as $image) {
-                $image['image']='';
+                $image_base64 = base64_decode($image['image']);
+                $compressedImageData = gzcompress($image_base64);
+                //$image['image']='';
+                $image['image']=$compressedImageData;
                 if ($image && array_key_exists("id", $image)) {
                     OfferImage::find($image['id'])->update($image);
                 } else {

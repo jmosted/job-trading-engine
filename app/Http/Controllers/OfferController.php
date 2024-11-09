@@ -6,16 +6,19 @@ use App\Models\Offer;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use App\Repository\IOfferRepository;
+use App\Repository\IOfferImageRepository;
 use App\Services\IOfferService;
 
 class OfferController extends BaseController {
     
     private $repository;
     private $service;
+    private $offerIRepository;
 
-    public function __construct(IOfferRepository $repository, IOfferService $service) {
+    public function __construct(IOfferRepository $repository, IOfferService $service, IOfferImageRepository $offerImageRepository) {
         $this->repository = $repository; 
         $this->service = $service;
+        $this->offerIRepository = $offerImageRepository;
     }
 
     public function index(Request $request)
@@ -92,5 +95,16 @@ class OfferController extends BaseController {
         } catch (\Exception $e) {
             return response()->json(['error' => false, 'code' => 10,'data' => null, 'type'=>'1','msg' => $e->getMessage()],500);
         }
+    }
+
+    function getImageByOfferId(Request $request, $offer) {
+        try
+        {
+            $params = $request->all();
+            $offer_images = $this->offerIRepository->getByOfferId($offer);
+            return response()->json(['error' => false, 'code' => 29,'data' => ['offer_images' => $offer_images], 'type'=>'1','msg' => 'Procesado correctamente']);
+        } catch (\Exception $e) {
+            return response()->json(['error' => false, 'code' => 10,'data' => null, 'type'=>'1','msg' => $e->getMessage()],500);
+        } 
     }
 }

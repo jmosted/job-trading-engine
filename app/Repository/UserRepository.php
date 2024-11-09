@@ -7,7 +7,7 @@ class UserRepository implements IUserRepository{
     function list($params)
     {     
         try{
-            $list = User::paginate();
+            $list = User::where('status',1)->paginate();
             return $list;
 
         } catch (\Exception $e) {

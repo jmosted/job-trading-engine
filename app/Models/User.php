@@ -24,7 +24,7 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
      * @var string[]
      */
     protected $fillable = [
-        'id','username','name', 'lastname','email','identification_number','identification_type','failed_attempts','status','block_date','is_block','favorite_phrase'
+        'id','username','name', 'lastname','email','identification_number','identification_type','failed_attempts','status','block_date','is_block','favorite_phrase','cellphone'
     ];
 
     /**
@@ -54,7 +54,8 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
             'lastname' => $this->lastname,
             'email' => $this->email,
             'identification_number' => $this->identification_number,
-            'status' => $this->status
+            'status' => $this->status,
+            'cellphone' => $this->cellphone,
             // Agrega aquí más campos que desees incluir
         ];
         

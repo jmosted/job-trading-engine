@@ -4,11 +4,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Offer extends Model{
+class Category extends Model{
 
     public $timestamps = true;
  
     protected $fillable = [
-        'name','deadline','user_id','description','price','status','category'
+        'name','status','created_at','updated_at'
     ];
 }

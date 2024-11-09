@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id(); // Equivalente a SERIAL en MySQL (auto-incremental)
             $table->string('name', 255);
             $table->text('description')->nullable();
-            $table->integer('deadline');
+            $table->integer('deadline')->nullable();
             $table->decimal('price', 10, 2);
             $table->integer('status')->default(1)->nullable();
             $table->string('type', 255);
