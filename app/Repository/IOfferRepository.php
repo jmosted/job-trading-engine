@@ -7,4 +7,6 @@ interface IOfferRepository{
     public function save($params);
     public function destroy($params);
     public function findById($id);
+    public function getCompleted($user_id);
+    public function getActive($user_id);
 }

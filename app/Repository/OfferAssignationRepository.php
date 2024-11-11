@@ -4,15 +4,25 @@ use App\Models\Offer;
 use App\Models\OfferAssignation;
 use Illuminate\Support\Facades\Log;
 use App\Repository\IOfferAssignationRepository;
+use App\Constants\Constant;
 
 class OfferAssignationRepository implements IOfferAssignationRepository{
 
 
     function list($params){        
         try{
-            $list = OfferAssignation::where('status','1')
-                ->where('status','2')
-                ->where('status','3')
+            $conditions = [['offer_assignations.status','!=',Constant::DELETED_STATUS]];
+            if(array_key_exists("user_id",$params)) 
+                $conditions[]=['offer_assignations.user_id',$params['user_id']];
+            if(array_key_exists("offer_id",$params)) 
+                $conditions[]=['offer_assignations.offer_id',$params['offer_id']];
+            $list = OfferAssignation::select('offer_assignations.id','offer_assignations.status','offer_assignations.user_id','offer_assignations.offer_id','offer_assignations.created_at','offer_assignations.updated_at',
+                'u.name','u.lastname','u.cellphone','u.email')
+                ->whereIn('offer_assignations.status',[Constant::CREATED_STATUS,Constant::EXECUTION_STATUS,Constant::COMPLETED_STATUS])
+                ->join('users as u','u.id','=','offer_assignations.user_id')
+                ->where('offer_assignations.status','!=', Constant::DELETED_STATUS)
+                ->where('offer_assignations.status','!=',Constant::REJECTED_STATUS)
+                ->where($conditions)
                 ->orderBy("created_at","asc")
                 ->paginate();
             return $list;
@@ -28,7 +38,8 @@ class OfferAssignationRepository implements IOfferAssignationRepository{
                 $o = OfferAssignation::find($data['id']);
             }
             else $o = OfferAssignation::create($data);
-            return $o;
+            $resp = OfferAssignation::find($o->id);
+            return $resp;
         } catch (\Exception $e)
         {
             throw new \Exception($e->getMessage());
@@ -59,11 +70,11 @@ class OfferAssignationRepository implements IOfferAssignationRepository{
 
     function findByOfferId($id){
         try {
-            $offer_requests = OfferAssignation::select('id','image','status','user_id','offer_id','created_at','updated_at')
+            $offer_requests = OfferAssignation::select('id','status','user_id','offer_id','created_at','updated_at')
             ->where('offer_id',$id)
-            ->whereIn('status',[1,2,3])
-            ->get();
-            if($offer_requests->isEmpty()) return null;
+            ->whereIn('status',[Constant::CREATED_STATUS,Constant::EXECUTION_STATUS,Constant::COMPLETED_STATUS])
+            ->orderBy('created_at','desc')
+            ->first();
             return $offer_requests;
         } catch (\Exception $e) {
             throw new \Exception($e->getMessage());
@@ -74,7 +85,7 @@ class OfferAssignationRepository implements IOfferAssignationRepository{
         try {
             $offer_assignation = OfferAssignation::where('offer_id',$offer_id)
             ->where('user_id',$user_id)
-            ->whereIn('status',[1,2,3])
+            ->whereIn('status',[Constant::CREATED_STATUS,Constant::EXECUTION_STATUS,Constant::COMPLETED_STATUS])
             ->orderBy('created_at','desc')
             ->first();
             return $offer_assignation;

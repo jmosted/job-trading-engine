@@ -3,21 +3,19 @@ namespace App\Repository;
 use App\Models\Offer;
 use App\Models\OfferImage;
 use Illuminate\Support\Facades\Log;
+use App\Constants\Constant;
 
 class OfferRepository implements IOfferRepository{
 
 
     function list($params){        
         try{
-            if( array_key_exists("user_id", $params) ){
-                $list = Offer::where('status','1')
-                    ->where('user_id',$params['user_id']) //
-                    ->orderBy("created_at","asc")
-                    ->paginate();
-                return $list;
-            }
-
+            $conditions = [['offers.status','!=',Constant::DELETED_STATUS]];
+            if(array_key_exists("user_id",$params)) 
+                $conditions[]=['offers.user_id',$params['user_id']];
             $list = Offer::where('status','1')
+                ->where('user_id',$params['user_id'])
+                ->where($conditions)
                 ->orderBy("created_at","asc")
                 ->paginate();
             return $list;
@@ -29,14 +27,16 @@ class OfferRepository implements IOfferRepository{
     function save($data){
         try {
             $offer_image = $data['image_data'];
-            Log::info("Guardar oferta",$data);
+            //Log::info("Guardar oferta",$data);
             unset($data['image_data']);
             if( array_key_exists("id",$data) ) {
                 Offer::find($data['id'])->update($data);
                 $o = Offer::find($data['id']);
             }
             else $o = Offer::create($data);
-
+            if (array_key_exists("id",$data)) {
+                return $o;
+            }
             foreach ($offer_image as $image) {
                 if (!$image['image'] || ( $image['image'] && $image['image'] == '')) {
                     continue;
@@ -80,6 +80,34 @@ class OfferRepository implements IOfferRepository{
         try {
             $user = Offer::find($id);
             return $user;
+        } catch (\Exception $e) {
+            throw new \Exception($e->getMessage());
+        }
+    }
+
+    public function getCompleted($user_id) {
+        try {
+            $list = Offer::select('offers.id','offers.rating','oa.user_id','oa.created_at as fecha_asignacion')
+                ->join('offer_assignations as oa','oa.offer_id','=','offers.id')
+                ->where('offers.status',Constant::COMPLETED_STATUS)
+                ->where('oa.user_id',$user_id)
+                ->orderBy("offers.created_at","asc")
+                ->get();
+            return $list;
+        } catch (\Exception $e) {
+            throw new \Exception($e->getMessage());
+        }
+    }
+
+    public  function getActive($user_id) {
+        try {
+            $list = Offer::select('offers.id','oa.user_id','oa.created_at as fecha_asignacion')
+                ->join('offer_assignations as oa','oa.offer_id','=','offers.id')
+                ->where('status',Constant::EXECUTION_STATUS)
+                ->where('oa.user_id',$user_id)
+                ->orderBy("created_at","asc")
+                ->get();
+            return $list;
         } catch (\Exception $e) {
             throw new \Exception($e->getMessage());
         }

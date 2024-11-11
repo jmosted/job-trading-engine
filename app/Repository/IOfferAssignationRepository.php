@@ -7,5 +7,6 @@ interface IOfferAssignationRepository{
     public function save($params);
     public function destroy($params);
     public function findByOfferId($id);
+    public function findById($id);
     public function getLastOfferAssignation($offer_id,$user_id);
 }

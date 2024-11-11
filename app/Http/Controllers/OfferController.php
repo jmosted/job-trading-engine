@@ -7,6 +7,8 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use App\Repository\IOfferRepository;
 use App\Repository\IOfferImageRepository;
+use App\Repository\IOfferAssignationRepository;
+use App\Repository\IOfferRequestRepository;
 use App\Services\IOfferService;
 
 class OfferController extends BaseController {
@@ -14,11 +16,15 @@ class OfferController extends BaseController {
     private $repository;
     private $service;
     private $offerIRepository;
+    private $offerAssignationRepository;
+    private $offerRequestRepository;
 
-    public function __construct(IOfferRepository $repository, IOfferService $service, IOfferImageRepository $offerImageRepository) {
+    public function __construct(IOfferRepository $repository, IOfferService $service, IOfferImageRepository $offerImageRepository, IOfferAssignationRepository $offerAssignationRepository, IOfferRequestRepository $offerRequestRepository) {
         $this->repository = $repository; 
         $this->service = $service;
         $this->offerIRepository = $offerImageRepository;
+        $this->offerAssignationRepository = $offerAssignationRepository;
+        $this->offerRequestRepository = $offerRequestRepository;
     }
 
     public function index(Request $request)
@@ -49,7 +55,7 @@ class OfferController extends BaseController {
     {
         try {
             $params = $request->all();
-            $resp = $this->repository->save($params);        
+            $resp = $this->service->save($params);        
             return response()->json(['error' => false, 'code' => 29,'data' => ['offer' => $resp], 'type'=>'1','msg' => 'Procesado correctamente']);
         } catch (\Exception $e) {
             return response()->json(['error' => false, 'code' => 10,'data' => null, 'type'=>'1','msg' => $e->getMessage()],500);
@@ -75,43 +81,6 @@ class OfferController extends BaseController {
         return response()->json(['msg' => 'Ofertas']);
     }
 
-    public function requestOffer(Request $request)
-    {
-        try {
-            $params = $request->all();
-            $resp = $this->service->requestOffer($params);        
-            return response()->json(['error' => false, 'code' => 29,'data' =>  $resp, 'type'=>'1','msg' => 'Procesado correctamente']);
-        } catch (\Exception $e) {
-            return response()->json(['error' => true, 'code' => 10,'data' => null, 'type'=>'1','msg' => $e->getMessage()],500);
-        }
-    }
-
-    //eliminar solicitud de oferta
-
-    //varios trabajadores
-
-    public function assignOffer(Request $request)
-    {
-        try {
-            $params = $request->all();
-            $resp = $this->service->assignOffer($params);        
-            return response()->json(['error' => false, 'code' => 29,'data' => $resp, 'type'=>'1','msg' => 'Procesado correctamente']);
-        } catch (\Exception $e) {
-            return response()->json(['error' => true, 'code' => 10,'data' => null, 'type'=>'1','msg' => $e->getMessage()],500);
-        }
-    }
-
-    public function rejectRequestOffer(Request $request)
-    {
-        try {
-            $params = $request->all();
-            $resp = $this->service->assignOffer($params);        
-            return response()->json(['error' => false, 'code' => 29,'data' => $resp, 'type'=>'1','msg' => 'Procesado correctamente']);
-        } catch (\Exception $e) {
-            return response()->json(['error' => false, 'code' => 10,'data' => null, 'type'=>'1','msg' => $e->getMessage()],500);
-        }
-    }
-
     function getImageByOfferId(Request $request, $offer) {
         try
         {
@@ -123,6 +92,5 @@ class OfferController extends BaseController {
         } 
     }
 }
-
 
 //0 - delete 1- active 2-assigned

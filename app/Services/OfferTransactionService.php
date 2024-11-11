@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Services;
-use App\Services\IOfferService;
+use App\Services\IOfferTransactionService;
 use App\Repository\IOfferRepository;
 use App\Repository\IOfferRequestRepository;
 use App\Repository\IOfferAssignationRepository;
@@ -9,33 +9,20 @@ use App\Models\Offer;
 use \Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
 use App\Constants\Constant;
+use App\Repository\IUserRepository;
 
-class OfferService implements IOfferService {
+class OfferTransactionService implements IOfferTransactionService {
     private $repository;
     private $repoRequest;
     private $repoAssignation;
+    private $repoUser;
 
 
-    public function __construct(IOfferRepository $repo, IOfferRequestRepository $repoRequest, IOfferAssignationRepository $repoAssignation) {
+    public function __construct(IOfferRepository $repo, IOfferRequestRepository $repoRequest, IOfferAssignationRepository $repoAssignation, IUserRepository $repoUser) {
         $this->repository = $repo;
         $this->repoRequest = $repoRequest;
         $this->repoAssignation = $repoAssignation;
-    }
-
-    public function list($params) {
-        return $this->repository->list($params);
-    }
-
-    public function save($payload) {
-        try {
-            DB::beginTransaction();
-            $offer = $this->repository->save($payload);
-            DB::commit();
-            return $offer;
-        } catch (\Exception $e) {
-            DB::rollBack();
-            throw new \Exception($e->getMessage(), $e->getCode());
-        }
+        $this->repoUser = $repoUser;
     }
 
     public function requestOffer($data) {
@@ -140,7 +127,93 @@ class OfferService implements IOfferService {
     public function destroyAssignOffer($data) {
         $this->repoAssignation->destroy($data);
     }
-    public function destroy($id) {
-        $this->repository->destroy($id);
+
+    function finalizeOffer($data) {
+        try
+        {
+            DB::beginTransaction();
+            if (!array_key_exists('offer_id', $data)) {
+                throw new \Exception("Falta el id de la oferta", 500);
+            }
+            Log::info($data['offer_id']);
+            $offer = $this->repository->findById($data['offer_id']);
+            if(!$offer) {
+                throw new \Exception("La oferta no existe", 500);
+            }
+            //return $offer;
+            Log::info($offer);
+            $offer->status = Constant::COMPLETED_STATUS;
+            $offer->update();
+            $offer_assingnation = $this->repoAssignation->findByOfferId($data['offer_id']);
+            Log::info($offer_assingnation);
+            if(!$offer_assingnation) {
+                throw new \Exception("Error al intentar finalizar la oferta", 500);
+            }
+            $offer_assingnation->status= Constant::COMPLETED_STATUS;
+            $offer_assingnation->update();
+            $offer_requests = $this->repoRequest->findByOfferId($data['offer_id']);
+            foreach ($offer_requests as $offer_request) {
+                if ($offer_request->status==Constant::REJECTED_STATUS || $offer_request->status==Constant::DELETED_STATUS) {
+                    continue;
+                }
+                $offer_request->status = $offer_request->user_id==$offer_assingnation['user_id']?Constant::COMPLETED_STATUS:Constant::REJECTED_STATUS;
+                $offer_request->save();
+            }
+            DB::commit();
+            return $offer;
+        } catch (\Exception $e) {
+            DB::rollBack();
+            throw new \Exception($e->getMessage(), $e->getCode());
+        }
+    }
+
+    function qualifyOffer($data) {
+        try
+        {
+            DB::beginTransaction();
+            if (!array_key_exists('offer_id', $data)) {
+                throw new \Exception("Falta el id de la oferta", 500);
+            }
+            if (!array_key_exists('rating', $data)) {
+                throw new \Exception("Falta la calificación de la oferta", 500);
+            }
+            $offer = $this->repository->findById($data['offer_id']);
+            if(!$offer) {
+                throw new \Exception("La oferta no existe", 500);
+            }
+            if($offer->status != Constant::COMPLETED_STATUS) {
+                throw new \Exception("La oferta aun no está finalizada", 500);
+            }
+            $offer->rating = $data['rating'];
+            Log::info($offer);
+            $offer->update();
+            $offer_assingnation = $this->repoAssignation->findByOfferId($data['offer_id']);
+            if(!$offer_assingnation) {
+                throw new \Exception("Error al intentar calificar la oferta", 500);
+            }
+            $user_assigned = $offer_assingnation->user_id;
+            $user = $this->repoUser->user($user_assigned);
+            $user_rating = $this->getUserQualification($user_assigned);
+            $user->rating = $user_rating;
+            $user->update();
+            DB::commit();
+            return $offer;
+        } catch (\Exception $e) {
+            DB::rollBack();
+            throw new \Exception($e->getMessage(), $e->getCode());
+        }
+    }
+
+    public function getUserQualification($user_id) {
+        $offers_completed = $this->repository->getCompleted($user_id);
+        if (count(value: $offers_completed) == 0) {
+            return null;
+        }
+        $qualification = 0.0;
+        foreach ($offers_completed as $offer) {
+            $qualification += $offer['rating'];
+        }
+        $total_rating = $qualification / count($offers_completed);
+        return $total_rating;
     }
 }   

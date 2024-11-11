@@ -35,16 +35,22 @@ $router->group(['middleware'=>'api'], function () use ($router) {
     $router->delete("/api/offer/{id}", "OfferController@remove");
     $router->get("/api/offer/getByUserId/{user}", "OfferController@getByUser");
     $router->get("/api/offer/getByCategoryId/{category}", "OfferController@getByCategory");
-    
-    $router->post("/api/offer/request", "OfferController@requestOffer");
-    $router->post("/api/offer/delete-request", "OfferController@deleteRequestOffer");
-    $router->post("/api/offer/assign", "OfferController@assignOffer");
-    $router->post("/api/offer/reject", "OfferController@rejectRequestOffer");
-
-    //Traer usuarios que solicitaron asignacion de oferta
-    $router->get("/api/offer/request/{id}", "OfferController@listRequestOffer"); //agregar campo promedio de calificacion, retornar nombres y apellidos, calificacion, email, telefono.
 
     $router->get("/api/offer/image/{offer}", "OfferController@getImageByOfferId");
+    
+    $router->get("/api/offer/request", "OfferTransactionController@listRequestOffer");  //ok
+    $router->get("/api/offer/assign", "OfferTransactionController@listAssignOffer"); //ok
+
+    $router->post("/api/offer/request", "OfferTransactionController@requestOffer");  //ok
+    $router->post("/api/offer/assign", "OfferTransactionController@assignOffer"); //ok
+
+    $router->delete("/api/offer/request/{id}", "OfferTransactionController@deleteRequestOffer");
+    $router->delete("/api/offer/assign/{id}", "OfferTransactionController@deleteAssignOffer");
+    $router->post("/api/offer/reject", "OfferTransactionController@rejectRequestOffer");//ok
+    $router->post("/api/offer/reject-assign", "OfferTransactionController@rejectAssignOffer");//ok
+
+    $router->post("/api/offer/finalize", "OfferTransactionController@finalizeOffer");
+    $router->post("/api/offer/qualify", "OfferTransactionController@qualifyOffer");
 });
 
 
