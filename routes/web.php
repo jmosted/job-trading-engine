@@ -8,6 +8,9 @@ $router->group(['middleware'=>'cors1'], function() use($router){
     $router->post('/api/login','AuthController@login');
 });
 
+$router->get('/api/documentation', '\SwaggerLume\Http\Controllers\SwaggerLumeController@api');
+$router->get('/docs', '\SwaggerLume\Http\Controllers\SwaggerLumeController@docs');
+
 $router->group(['middleware'=>'api'], function () use ($router) {
     // Matches "/api/register
     ///$router->post('login', 'AuthController@login');
@@ -32,6 +35,14 @@ $router->group(['middleware'=>'api'], function () use ($router) {
     $router->delete("/api/offer/{id}", "OfferController@remove");
     $router->get("/api/offer/getByUserId/{user}", "OfferController@getByUser");
     $router->get("/api/offer/getByCategoryId/{category}", "OfferController@getByCategory");
+    
+    $router->post("/api/offer/request", "OfferController@requestOffer");
+    $router->post("/api/offer/delete-request", "OfferController@deleteRequestOffer");
+    $router->post("/api/offer/assign", "OfferController@assignOffer");
+    $router->post("/api/offer/reject", "OfferController@rejectRequestOffer");
+
+    //Traer usuarios que solicitaron asignacion de oferta
+    $router->get("/api/offer/request/{id}", "OfferController@listRequestOffer"); //agregar campo promedio de calificacion, retornar nombres y apellidos, calificacion, email, telefono.
 
     $router->get("/api/offer/image/{offer}", "OfferController@getImageByOfferId");
 });

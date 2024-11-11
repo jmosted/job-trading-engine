@@ -51,7 +51,7 @@ class OfferImageRepository implements IOfferImageRepository{
 
     function getByOfferId($id){
         try {
-            $offer_images = OfferImage::select('id','image','status','user_id','offer_id','created_at','updated_at')
+            $offer_images = OfferImage::select('id','file_name','file_extension','image','status','user_id','offer_id','created_at','updated_at')
             ->where('offer_id',$id)
             ->where('status','1')
             ->get();

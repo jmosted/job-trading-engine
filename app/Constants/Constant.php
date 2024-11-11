@@ -11,6 +11,7 @@ class Constant {
     const CREATED_STATUS = 1;
     const EXECUTION_STATUS = 2;
     const COMPLETED_STATUS = 3;
-    const DELETED_STATUS = 4;
-    const STOPPED_STATUS = 5;
+    const DELETED_STATUS = 0;
+    const STOPPED_STATUS = 4;
+    const REJECTED_STATUS = 5;
 }

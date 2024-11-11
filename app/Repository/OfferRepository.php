@@ -9,6 +9,14 @@ class OfferRepository implements IOfferRepository{
 
     function list($params){        
         try{
+            if( array_key_exists("user_id", $params) ){
+                $list = Offer::where('status','1')
+                    ->where('user_id',$params['user_id']) //
+                    ->orderBy("created_at","asc")
+                    ->paginate();
+                return $list;
+            }
+
             $list = Offer::where('status','1')
                 ->orderBy("created_at","asc")
                 ->paginate();
@@ -30,6 +38,9 @@ class OfferRepository implements IOfferRepository{
             else $o = Offer::create($data);
 
             foreach ($offer_image as $image) {
+                if (!$image['image'] || ( $image['image'] && $image['image'] == '')) {
+                    continue;
+                } 
                 $image_base64 = base64_decode($image['image']);
                 $compressedImageData = gzcompress($image_base64);
                 //$image['image']='';

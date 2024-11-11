@@ -9,6 +9,6 @@ class Offer extends Model{
     public $timestamps = true;
  
     protected $fillable = [
-        'name','deadline','user_id','description','price','status','category'
+        'name','deadline','user_id','description','price','status','category', 'type','address','rating'
     ];
 }

@@ -1,16 +1,16 @@
 <?php
 namespace App\Repository;
 use App\Models\Offer;
-use App\Models\OfferRequest;
+use App\Models\OfferAssignation;
 use Illuminate\Support\Facades\Log;
-use App\Repository\IOfferRequestRepository;
+use App\Repository\IOfferAssignationRepository;
 
-class OfferRequestRepository implements IOfferRequestRepository{
+class OfferAssignationRepository implements IOfferAssignationRepository{
 
 
     function list($params){        
         try{
-            $list = OfferRequest::where('status','1')
+            $list = OfferAssignation::where('status','1')
                 ->where('status','2')
                 ->where('status','3')
                 ->orderBy("created_at","asc")
@@ -24,11 +24,10 @@ class OfferRequestRepository implements IOfferRequestRepository{
     function save($data){
         try {
             if( array_key_exists("id",$data) ) {
-                OfferRequest::find($data['id'])->update($data);
-                $o = OfferRequest::find($data['id']);
+                OfferAssignation::find($data['id'])->update($data);
+                $o = OfferAssignation::find($data['id']);
             }
-            else $o = OfferRequest::create($data);
-            
+            else $o = OfferAssignation::create($data);
             return $o;
         } catch (\Exception $e)
         {
@@ -38,7 +37,7 @@ class OfferRequestRepository implements IOfferRequestRepository{
 
     function destroy($id){
         try {            
-            OfferRequest::find($id)->update(['status'=>0]);
+            OfferAssignation::find($id)->update(['status'=>0]);
             return $id;
         } catch (\Exception $e) {
             throw new \Exception($e->getMessage());
@@ -46,23 +45,22 @@ class OfferRequestRepository implements IOfferRequestRepository{
     }
 
     public function findById($id) {
-        return OfferRequest::find($id);
+        return OfferAssignation::find($id);
     }
     
-    function offerRequest($id){
+    function offerAssignation($id){
         try {
-            $user = OfferRequest::find($id);
+            $user = Offer::find($id);
             return $user;
         } catch (\Exception $e) {
             throw new \Exception($e->getMessage());
         }
     }
 
-    function getByOfferId($offer_id, $user_id){
+    function findByOfferId($id){
         try {
-            $offer_requests = OfferRequest::select('id','image','status','user_id','offer_id','created_at','updated_at')
-            ->where('offer_id',$offer_id)
-            ->where('user_id',$user_id)
+            $offer_requests = OfferAssignation::select('id','image','status','user_id','offer_id','created_at','updated_at')
+            ->where('offer_id',$id)
             ->whereIn('status',[1,2,3])
             ->get();
             if($offer_requests->isEmpty()) return null;
@@ -72,11 +70,11 @@ class OfferRequestRepository implements IOfferRequestRepository{
         }
     }
 
-    function getLastOfferRequest($offer_id, $user_id){
+    function getLastOfferAssignation($offer_id, $user_id){
         try {
-            $offer_assignation = OfferRequest::where('offer_id',$offer_id)
-            ->whereIn('status',[1,2,3])
+            $offer_assignation = OfferAssignation::where('offer_id',$offer_id)
             ->where('user_id',$user_id)
+            ->whereIn('status',[1,2,3])
             ->orderBy('created_at','desc')
             ->first();
             return $offer_assignation;

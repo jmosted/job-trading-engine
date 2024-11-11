@@ -82,11 +82,26 @@ class OfferController extends BaseController {
             $resp = $this->service->requestOffer($params);        
             return response()->json(['error' => false, 'code' => 29,'data' =>  $resp, 'type'=>'1','msg' => 'Procesado correctamente']);
         } catch (\Exception $e) {
-            return response()->json(['error' => false, 'code' => 10,'data' => null, 'type'=>'1','msg' => $e->getMessage()],500);
+            return response()->json(['error' => true, 'code' => 10,'data' => null, 'type'=>'1','msg' => $e->getMessage()],500);
         }
     }
 
+    //eliminar solicitud de oferta
+
+    //varios trabajadores
+
     public function assignOffer(Request $request)
+    {
+        try {
+            $params = $request->all();
+            $resp = $this->service->assignOffer($params);        
+            return response()->json(['error' => false, 'code' => 29,'data' => $resp, 'type'=>'1','msg' => 'Procesado correctamente']);
+        } catch (\Exception $e) {
+            return response()->json(['error' => true, 'code' => 10,'data' => null, 'type'=>'1','msg' => $e->getMessage()],500);
+        }
+    }
+
+    public function rejectRequestOffer(Request $request)
     {
         try {
             $params = $request->all();
@@ -108,3 +123,6 @@ class OfferController extends BaseController {
         } 
     }
 }
+
+
+//0 - delete 1- active 2-assigned
