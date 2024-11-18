@@ -7,8 +7,6 @@ use App\Repository\IOfferRequestRepository;
 use App\Constants\Constant;
 
 class OfferRequestRepository implements IOfferRequestRepository{
-
-
     function list($params){        
         try{
             $conditions = [['offer_requests.status','!=',Constant::DELETED_STATUS]];
@@ -26,7 +24,7 @@ class OfferRequestRepository implements IOfferRequestRepository{
             return $list;
         } catch (\Exception $e) { 
             throw new \Exception($e->getMessage());
-        }        
+        }
     }
     function save($data){
         try {

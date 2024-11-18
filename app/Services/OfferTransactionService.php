@@ -30,14 +30,14 @@ class OfferTransactionService implements IOfferTransactionService {
         {
             DB::beginTransaction();
             if (!array_key_exists('offer_id', $data)) {
-                throw new \Exception("Falta el id de la oferta", 500);
+                throw new \Exception("Falta el id de la oferta", 400);
             }
             if (!array_key_exists('user_id', $data)) {
-                throw new \Exception("Falta el id del usuario", 500);
+                throw new \Exception("Falta el id del usuario", 400);
             }
             $offerRequest = $this->repoRequest->getLastOfferRequest($data['offer_id'], $data['user_id']);
             if($offerRequest) {
-                throw new \Exception("La oferta ya ha sido solicitada", 500);
+                throw new \Exception("La oferta ya ha sido solicitada", 201);
             }
             $requestOffer = $this->repoRequest->save($data);
             DB::commit();
@@ -54,14 +54,14 @@ class OfferTransactionService implements IOfferTransactionService {
         {
             DB::beginTransaction();
             if (!array_key_exists('offer_id', $data)) {
-                throw new \Exception("Falta el id de la oferta", 500);
+                throw new \Exception("Falta el id de la oferta", 400);
             }
             if (!array_key_exists('user_id', $data)) {
-                throw new \Exception("Falta el id del usuario", 500);
+                throw new \Exception("Falta el id del usuario", 400);
             }
             $offerAssigned = $this->repoAssignation->getLastOfferAssignation($data['offer_id'], $data['user_id']);
             if($offerAssigned) {
-                throw new \Exception("La oferta ya ha sido asignada", 500);
+                throw new \Exception("La oferta ya ha sido asignada", 201);
             }
             //Actualizar a estado de rechazado
             $this->repoRequest->markAsUnnasignedOtherRequests($data['offer_id'], $data['user_id']);
@@ -79,11 +79,11 @@ class OfferTransactionService implements IOfferTransactionService {
         {
             DB::beginTransaction();
             if (!array_key_exists('id', $data)) {
-                throw new \Exception("Falta el id de la oferta", 500);
+                throw new \Exception("Falta el id de la oferta", 400);
             }
             $offerRequest = $this->repoRequest->findById($data['id']);
             if(!$offerRequest) {
-                throw new \Exception("La solicitud no existe", 500);
+                throw new \Exception("La solicitud no existe", 400);
             }
             $offerRequest::update(['status'=>Constant::REJECTED_STATUS]);
             $this->repoRequest->markAsCratedOtherRequests($offerRequest['offer_id'], $offerRequest['user_id']);
@@ -102,11 +102,11 @@ class OfferTransactionService implements IOfferTransactionService {
         {
             DB::beginTransaction();
             if (!array_key_exists('id', $data)) {
-                throw new \Exception("Falta el id de la oferta", 500);
+                throw new \Exception("Falta el id de la oferta", 400);
             }
             $offerAssign = $this->repoAssignation->findById($data['id']);
             if(!$offerAssign) {
-                throw new \Exception("La solicitud no existe", 500);
+                throw new \Exception("La solicitud no existe", 400);
             }
             $offerAssign::update(['status'=>Constant::REJECTED_STATUS]);
             $this->repoRequest->markAsCratedOtherRequests($offerAssign['offer_id'], $offerAssign['user_id']);
@@ -133,12 +133,12 @@ class OfferTransactionService implements IOfferTransactionService {
         {
             DB::beginTransaction();
             if (!array_key_exists('offer_id', $data)) {
-                throw new \Exception("Falta el id de la oferta", 500);
+                throw new \Exception("Falta el id de la oferta", 400);
             }
             Log::info($data['offer_id']);
             $offer = $this->repository->findById($data['offer_id']);
             if(!$offer) {
-                throw new \Exception("La oferta no existe", 500);
+                throw new \Exception("La oferta no existe", 400);
             }
             //return $offer;
             Log::info($offer);
@@ -147,7 +147,7 @@ class OfferTransactionService implements IOfferTransactionService {
             $offer_assingnation = $this->repoAssignation->findByOfferId($data['offer_id']);
             Log::info($offer_assingnation);
             if(!$offer_assingnation) {
-                throw new \Exception("Error al intentar finalizar la oferta", 500);
+                throw new \Exception("Error al intentar finalizar la oferta", 400);
             }
             $offer_assingnation->status= Constant::COMPLETED_STATUS;
             $offer_assingnation->update();

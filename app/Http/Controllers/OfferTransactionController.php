@@ -36,7 +36,8 @@ class OfferTransactionController extends BaseController {
             $resp = $this->offerTransactionService->requestOffer($params);        
             return response()->json(['error' => false, 'code' => 29,'data' =>  $resp, 'type'=>'1','msg' => 'Procesado correctamente']);
         } catch (\Exception $e) {
-            return response()->json(['error' => true, 'code' => 10,'data' => null, 'type'=>'1','msg' => $e->getMessage()],500);
+            $code = $e->getCode()==self::NO_PROCCESED_CODE ? $e->getCode() : ($e->getCode()==self::BAD_REQUEST_CODE ? $e->getCode() : self::INTERNAL_SERVER_ERROR_CODE);
+            return response()->json(['error' => true, 'code' => 10,'data' => null, 'type'=>'1','msg' => $e->getMessage()],$code);
         }
     }
 
@@ -47,7 +48,8 @@ class OfferTransactionController extends BaseController {
             $resp = $this->offerTransactionService->assignOffer($params);        
             return response()->json(['error' => false, 'code' => 29,'data' => $resp, 'type'=>'1','msg' => 'Procesado correctamente']);
         } catch (\Exception $e) {
-            return response()->json(['error' => true, 'code' => 10,'data' => null, 'type'=>'1','msg' => $e->getMessage()],500);
+            $code = $e->getCode()==self::NO_PROCCESED_CODE ? $e->getCode() : ($e->getCode()==self::BAD_REQUEST_CODE ? $e->getCode() : self::INTERNAL_SERVER_ERROR_CODE);
+            return response()->json(['error' => true, 'code' => 10,'data' => null, 'type'=>'1','msg' => $e->getMessage()],$code);
         }
     }
 
@@ -58,7 +60,8 @@ class OfferTransactionController extends BaseController {
             $resp = $this->offerTransactionService->rejectRequestOffer($params);        
             return response()->json(['error' => false, 'code' => 29,'data' => $resp, 'type'=>'1','msg' => 'Procesado correctamente']);
         } catch (\Exception $e) {
-            return response()->json(['error' => false, 'code' => 10,'data' => null, 'type'=>'1','msg' => $e->getMessage()],500);
+            $code = $e->getCode()==self::NO_PROCCESED_CODE ? $e->getCode() : ($e->getCode()==self::BAD_REQUEST_CODE ? $e->getCode() : self::INTERNAL_SERVER_ERROR_CODE);
+            return response()->json(['error' => true, 'code' => 10,'data' => null, 'type'=>'1','msg' => $e->getMessage()],$code);
         }
     }
 
@@ -68,7 +71,8 @@ class OfferTransactionController extends BaseController {
             $resp = $this->offerTransactionService->rejectAssignOffer($params);        
             return response()->json(['error' => false, 'code' => 29,'data' => $resp, 'type'=>'1','msg' => 'Procesado correctamente']);
         } catch (\Exception $e) {
-            return response()->json(['error' => false, 'code' => 10,'data' => null, 'type'=>'1','msg' => $e->getMessage()],500);
+            $code = $e->getCode()==self::NO_PROCCESED_CODE ? $e->getCode() : ($e->getCode()==self::BAD_REQUEST_CODE ? $e->getCode() : self::INTERNAL_SERVER_ERROR_CODE);
+            return response()->json(['error' => true, 'code' => 10,'data' => null, 'type'=>'1','msg' => $e->getMessage()],$code);
         }
     }
 
@@ -78,7 +82,8 @@ class OfferTransactionController extends BaseController {
             $resp = $this->offerRequestRepository->list($params);        
             return response()->json(['error' => false, 'code' => 29,'data' => $resp, 'type'=>'1','msg' => 'Procesado correctamente']);
         } catch (\Exception $e) {
-            return response()->json(['error' => false, 'code' => 10,'data' => null, 'type'=>'1','msg' => $e->getMessage()],500);
+            $code = $e->getCode()==self::NO_PROCCESED_CODE ? $e->getCode() : ($e->getCode()==self::BAD_REQUEST_CODE ? $e->getCode() : self::INTERNAL_SERVER_ERROR_CODE);
+            return response()->json(['error' => true, 'code' => 10,'data' => null, 'type'=>'1','msg' => $e->getMessage()],$code);
         }
     }
 
@@ -88,7 +93,8 @@ class OfferTransactionController extends BaseController {
             $resp = $this->offerAssignationRepository->list($params);        
             return response()->json(['error' => false, 'code' => 29,'data' => $resp, 'type'=>'1','msg' => 'Procesado correctamente']);
         } catch (\Exception $e) {
-            return response()->json(['error' => false, 'code' => 10,'data' => null, 'type'=>'1','msg' => $e->getMessage()],500);
+            $code = $e->getCode()==self::NO_PROCCESED_CODE ? $e->getCode() : ($e->getCode()==self::BAD_REQUEST_CODE ? $e->getCode() : self::INTERNAL_SERVER_ERROR_CODE);
+            return response()->json(['error' => true, 'code' => 10,'data' => null, 'type'=>'1','msg' => $e->getMessage()],$code);
         }
     }
 
@@ -98,7 +104,8 @@ class OfferTransactionController extends BaseController {
             $resp = $this->offerTransactionService->destroyRequestOffer($id);        
             return response()->json(['error' => false, 'code' => 29,'data' => $resp, 'type'=>'1','msg' => 'Procesado correctamente']);
         } catch (\Exception $e) {
-            return response()->json(['error' => false, 'code' => 10,'data' => null, 'type'=>'1','msg' => $e->getMessage()],500);
+            $code = $e->getCode()==self::NO_PROCCESED_CODE ? $e->getCode() : ($e->getCode()==self::BAD_REQUEST_CODE ? $e->getCode() : self::INTERNAL_SERVER_ERROR_CODE);
+            return response()->json(['error' => true, 'code' => 10,'data' => null, 'type'=>'1','msg' => $e->getMessage()],$code);
         }
     }
 
@@ -108,7 +115,8 @@ class OfferTransactionController extends BaseController {
             $resp = $this->offerTransactionService->destroyAssignOffer($id);        
             return response()->json(['error' => false, 'code' => 29,'data' => $resp, 'type'=>'1','msg' => 'Procesado correctamente']);
         } catch (\Exception $e) {
-            return response()->json(['error' => false, 'code' => 10,'data' => null, 'type'=>'1','msg' => $e->getMessage()],500);
+            $code = $e->getCode()==self::NO_PROCCESED_CODE ? $e->getCode() : ($e->getCode()==self::BAD_REQUEST_CODE ? $e->getCode() : self::INTERNAL_SERVER_ERROR_CODE);
+            return response()->json(['error' => true, 'code' => 10,'data' => null, 'type'=>'1','msg' => $e->getMessage()],$code);
         }
     }
 
@@ -118,7 +126,8 @@ class OfferTransactionController extends BaseController {
             $resp = $this->offerTransactionService->finalizeOffer($params);        
             return response()->json(['error' => false, 'code' => 29,'data' => $resp, 'type'=>'1','msg' => 'Procesado correctamente']);
         } catch (\Exception $e) {
-            return response()->json(['error' => false, 'code' => 10,'data' => null, 'type'=>'1','msg' => $e->getMessage()],500);
+            $code = $e->getCode()==self::NO_PROCCESED_CODE ? $e->getCode() : ($e->getCode()==self::BAD_REQUEST_CODE ? $e->getCode() : self::INTERNAL_SERVER_ERROR_CODE);
+            return response()->json(['error' => true, 'code' => 10,'data' => null, 'type'=>'1','msg' => $e->getMessage()],$code);
         }
     }
 
@@ -128,7 +137,8 @@ class OfferTransactionController extends BaseController {
             $resp = $this->offerTransactionService->qualifyOffer($params);        
             return response()->json(['error' => false, 'code' => 29,'data' => $resp, 'type'=>'1','msg' => 'Procesado correctamente']);
         } catch (\Exception $e) {
-            return response()->json(['error' => false, 'code' => 10,'data' => null, 'type'=>'1','msg' => $e->getMessage()],500);
+            $code = $e->getCode()==self::NO_PROCCESED_CODE ? $e->getCode() : ($e->getCode()==self::BAD_REQUEST_CODE ? $e->getCode() : self::INTERNAL_SERVER_ERROR_CODE);
+            return response()->json(['error' => true, 'code' => 10,'data' => null, 'type'=>'1','msg' => $e->getMessage()],$code);
         }
     }
 }
