@@ -56,6 +56,7 @@ class OfferImageRepository implements IOfferImageRepository{
             ->where('status','1')
             ->get();
             if($offer_images->isEmpty()) return null;
+            if ($offer_images->count() == 0) return null;
             foreach ($offer_images as $image) {
                 $imageDataUncompressed = gzuncompress($image->image);
                 $image->image = base64_encode($imageDataUncompressed);
