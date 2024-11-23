@@ -1,6 +1,7 @@
 <?php
 namespace App\Repository;
 use App\Models\User;
+use App\Constants\Constant;
 
 class UserRepository implements IUserRepository{
 
@@ -46,6 +47,15 @@ class UserRepository implements IUserRepository{
     function user($id){
         try {
             $user = User::find($id);
+            return $user;
+        } catch (\Exception $e) {
+            throw new \Exception($e->getMessage());
+        }
+    }
+
+    function findByEmail($email){
+        try {
+            $user = User::where('email',$email)->where('status','!=',Constant::DELETED_STATUS)->first();
             return $user;
         } catch (\Exception $e) {
             throw new \Exception($e->getMessage());

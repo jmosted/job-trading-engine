@@ -13,14 +13,15 @@ use Illuminate\Support\Facades\Auth;
 use App\Utils\GenerateId;
 use \Illuminate\Support\Facades\Log;
 use Illuminate\Http\JsonResponse;
+use App\Repository\IUserRepository;
 
 class AuthController extends Controller
 {
     //private $repository;
-    
-    public function __construct()
+    private $userRepository;
+    public function __construct(IUserRepository $repository)
     {
-        //$this->repository=$repository;
+        $this->userRepository=$repository;
     }
 
     public function googleRegister(Request $request){
@@ -104,11 +105,16 @@ class AuthController extends Controller
                 'email' => 'required|string',
                 'password' => 'required|string',
             ]);
+
+            $user = $this->userRepository->findByEmail($request->input('email'));
+            if (!$user) {
+                return response()->json(['error' => true, 'code' => 10, 'data' => null, 'type' => '1','msg'=>'Usuario no registrado'],403);
+            }
             $credentials = $request->only(['email', 'password']);
             $ttl=7200;
             $token = Auth::setTTL($ttl)->attempt($credentials);
             if (! $token) {
-                return response()->json(['error' => true, 'code' => 10, 'data' => null, 'type' => '1','msg'=>'Usuario no autorizado'],403);
+                return response()->json(['error' => true, 'code' => 10, 'data' => null, 'type' => '1','msg'=>'Contraseña incorrecta'],403);
             }
             return $this->respondWithToken($token,$credentials['email']);
         } catch (\Exception $e) {

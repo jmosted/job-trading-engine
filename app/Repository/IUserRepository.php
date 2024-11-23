@@ -6,4 +6,5 @@ interface IUserRepository{
     public function save($params);
     public function destroy($params);
     public function user($params);
+    public function findByEmail($email);
 }
