@@ -14,7 +14,6 @@ class OfferRepository implements IOfferRepository{
             if(array_key_exists("user_id",$params)) 
                 $conditions[]=['offers.user_id',$params['user_id']];
             $list = Offer::where('status','1')
-                ->where('user_id',$params['user_id'])
                 ->where($conditions)
                 ->orderBy("created_at","asc")
                 ->paginate();
