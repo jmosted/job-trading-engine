@@ -13,16 +13,21 @@ class OfferRepository implements IOfferRepository{
             $conditions = [['offers.status','!=',Constant::DELETED_STATUS]];
             if(array_key_exists("user_id",$params)) 
                 $conditions[]=['offers.user_id',$params['user_id']];
-            $list = Offer::where('status','1')
+            if(array_key_exists("category",$params))
+                $conditions[]=['offers.category',$params['category']];
+            $list = Offer::select('offers.id','offers.name','offers.deadline','offers.user_id','offers.description','offers.price','offers.status','offers.category', 'offers.type','offers.address','offers.rating','users.email','users.cellphone')
+            ->leftJoin('users','users.id','=','offers.user_id')
+                ->where('offers.status','1')
                 ->where($conditions)
-                ->orderBy("created_at","asc")
-                ->paginate();
+                ->orderBy("offers.created_at","asc")
+                ->paginate(9999);           
             return $list;
-
         } catch (\Exception $e) {
             throw new \Exception($e->getMessage());
         }        
     }
+
+    
     function save($data){
         try {
             $offer_image = $data['image_data'];
@@ -77,7 +82,12 @@ class OfferRepository implements IOfferRepository{
     
     function offer($id){
         try {
-            $user = Offer::find($id);
+            $user = Offer::select('offers.id','offers.name','offers.deadline','offers.user_id','offers.description','offers.price','offers.status','offers.category', 'offers.type','offers.address','offers.rating','users.email','users.cellphone')
+            ->leftJoin('users','users.id','=','offers.user_id')
+                ->where('offers.status','1')
+                ->where('offers.id',$id)
+                ->orderBy("offers.created_at","desc")
+                ->first();
             return $user;
         } catch (\Exception $e) {
             throw new \Exception($e->getMessage());
@@ -104,7 +114,7 @@ class OfferRepository implements IOfferRepository{
                 ->join('offer_assignations as oa','oa.offer_id','=','offers.id')
                 ->where('status',Constant::EXECUTION_STATUS)
                 ->where('oa.user_id',$user_id)
-                ->orderBy("created_at","asc")
+                ->orderBy("offers.created_at","asc")
                 ->get();
             return $list;
         } catch (\Exception $e) {
