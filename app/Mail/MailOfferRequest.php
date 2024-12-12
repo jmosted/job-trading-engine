@@ -10,7 +10,8 @@ use Illuminate\Queue\SerializesModels;
 class MailOfferRequest extends Mailable
 {
     use Queueable, SerializesModels;
-    public $droplet;
+    public $user;
+    public $offer;
     
 
     /**
@@ -18,9 +19,10 @@ class MailOfferRequest extends Mailable
      *
      * @return void
      */
-    public function __construct($droplet)
+    public function __construct($content)
     {
-        $this->droplet=$droplet;
+        $this->user=$content->user;
+        $this->offer=$content->offer;
     }
 
     /**
@@ -30,7 +32,7 @@ class MailOfferRequest extends Mailable
      */
     public function build(){
         return $this->subject('Solicitud de aceptación de oferta de trabajo')
-                    ->view('emails.offerrequest');
+                    ->view('emails.offerequest');
     }
 
 }

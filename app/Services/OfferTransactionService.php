@@ -6,6 +6,7 @@ use App\Repository\IOfferRepository;
 use App\Repository\IOfferRequestRepository;
 use App\Repository\IOfferAssignationRepository;
 use App\Models\Offer;
+use App\Models\User;
 use \Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
 use App\Constants\Constant;
@@ -16,13 +17,18 @@ class OfferTransactionService implements IOfferTransactionService {
     private $repoRequest;
     private $repoAssignation;
     private $repoUser;
+    private $mailService;
 
 
-    public function __construct(IOfferRepository $repo, IOfferRequestRepository $repoRequest, IOfferAssignationRepository $repoAssignation, IUserRepository $repoUser) {
+    public function __construct(
+        IOfferRepository $repo, IOfferRequestRepository $repoRequest, IOfferAssignationRepository $repoAssignation, 
+        IUserRepository $repoUser,IMailService $mailService
+    ) {
         $this->repository = $repo;
         $this->repoRequest = $repoRequest;
         $this->repoAssignation = $repoAssignation;
         $this->repoUser = $repoUser;
+        $this->mailService=$mailService;
     }
 
     public function requestOffer($data) {
@@ -35,10 +41,23 @@ class OfferTransactionService implements IOfferTransactionService {
             if (!array_key_exists('user_id', $data)) {
                 throw new \Exception("Falta el id del usuario", 400);
             }
+
+            $offer = $this->repository->findById($data['offer_id']);
+            if(!$offer) {
+                throw new \Exception("La oferta no existe", 400);
+            }
+
             $offerRequest = $this->repoRequest->getLastOfferRequest($data['offer_id'], $data['user_id']);
             if($offerRequest) {
                 throw new \Exception("La oferta ya ha sido solicitada", 201);
             }
+            
+            $user = $this->repoUser->user($offer->user_id);
+            $emailContent = [
+                'user'=> $user,
+                'offer'=>$offer
+            ];
+            $this->mailService->sendMailOfferRequest($user->email,(Object)$emailContent);
             $requestOffer = $this->repoRequest->save($data);
             DB::commit();
             return $requestOffer;
@@ -59,6 +78,12 @@ class OfferTransactionService implements IOfferTransactionService {
             if (!array_key_exists('user_id', $data)) {
                 throw new \Exception("Falta el id del usuario", 400);
             }
+
+            $offer = $this->repository->findById($data['offer_id']);
+            if(!$offer) {
+                throw new \Exception("La oferta no existe", 400);
+            }
+
             $offerAssigned = $this->repoAssignation->getLastOfferAssignation($data['offer_id'], $data['user_id']);
             if($offerAssigned) {
                 throw new \Exception("La oferta ya ha sido asignada", 201);
@@ -66,6 +91,13 @@ class OfferTransactionService implements IOfferTransactionService {
             //Actualizar a estado de rechazado
             $this->repoRequest->markAsUnnasignedOtherRequests($data['offer_id'], $data['user_id']);
             $assignOffer = $this->repoAssignation->save($data);
+
+            $user = $this->repoUser->user($data['user_id']);
+            $emailContent = [
+                'user'=> $user,
+                'offer'=>$offer
+            ];
+            $this->mailService->sendMailOfferaAssignation($user->email, (Object)$emailContent);
             DB::commit();
             return $assignOffer;
         } catch (\Exception $e) {

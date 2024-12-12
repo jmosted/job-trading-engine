@@ -74,12 +74,10 @@ class AuthController extends Controller
                 'cellphone' => 'required|string'
             ]);
             //dd($request);
-            log::info('Contenido: a');
             $user = User::where('email', $request->input('email'))->first();
             if ($user) {
                 return response()->json(['error' => true, 'code' => 10, 'data' => null, 'type' => '1','msg'=>'Email ya fue registrado'], 404);
             }
-            log::info('Contenido: b');
             
             $user_register = new User;
             $user_register->id = GenerateId::generateUuidV4();
@@ -94,12 +92,10 @@ class AuthController extends Controller
             $user_register->password = app('hash')->make($plainPassword);
             $user_register->cellphone = $request->input('cellphone');
             $user_register->save();
-            log::info('Contenido: c');
             $email_content = [
                 'username'=>$user_register->username,
                 'name'=>$user_register->name
             ];
-            log::info('Contenido: d');
             $this->mailService->sendMailRegister($user_register->email, (object)$email_content);
             $user = User::where('email', $request->input('email'))->first();
             return response()->json(['error' => false, 'code' => 29,'data' => ['user'=> $user_register], 'type'=>'1','msg' => 'Procesado correctamente'], 201);

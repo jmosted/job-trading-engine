@@ -10,7 +10,8 @@ use Illuminate\Queue\SerializesModels;
 class MailOfferAssignation extends Mailable
 {
     use Queueable, SerializesModels;
-    public $droplet;
+    public $user;
+    public $offer;
     
 
     /**
@@ -18,10 +19,12 @@ class MailOfferAssignation extends Mailable
      *
      * @return void
      */
-    public function __construct($droplet)
+    public function __construct($content)
     {
-        $this->droplet=$droplet;
+        $this->user = $content->user;
+        $this->offer = $content->offer;
     }
+
 
     /**
      * Build the message.
