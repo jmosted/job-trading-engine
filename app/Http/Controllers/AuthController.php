@@ -102,7 +102,7 @@ class AuthController extends Controller
             log::info('Contenido: d');
             $this->mailService->sendMailRegister($user_register->email, (object)$email_content);
             $user = User::where('email', $request->input('email'))->first();
-            return response()->json(['error' => false, 'code' => 29,'data' => [], 'type'=>'1','msg' => 'Procesado correctamente'], 201);
+            return response()->json(['error' => false, 'code' => 29,'data' => ['user'=> $user_register], 'type'=>'1','msg' => 'Procesado correctamente'], 201);
         } catch (\Exception $e) {
             //return error message
             return response()->json(['error' => true, 'code' => 10, 'data' => null, 'type' => '1','msg'=>$e], 409);
