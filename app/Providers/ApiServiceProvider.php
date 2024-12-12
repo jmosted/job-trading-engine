@@ -26,6 +26,7 @@ class ApiServiceProvider extends ServiceProvider
         $this->app->bind("App\Services\IOfferImageService","App\Services\OfferImageService");
         $this->app->bind("App\Services\IOfferRequestService","App\Services\OfferRequestService");
         $this->app->bind("App\Services\IOfferTransactionService","App\Services\OfferTransactionService");
+        $this->app->bind("App\Services\IMailService","App\Services\MailService");
 
         $this->app->bind("App\Interfaces\DateTimeProvider","App\Classes\CurrentDateTimeProvider");
     }
