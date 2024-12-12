@@ -93,7 +93,7 @@ class AuthController extends Controller
             $plainPassword = $request->input('password');
             $user_register->password = app('hash')->make($plainPassword);
             $user_register->cellphone = $request->input('cellphone');
-            //$user_register->save();
+            $user_register->save();
             log::info('Contenido: c');
             $email_content = [
                 'username'=>$user_register->username,
@@ -101,7 +101,7 @@ class AuthController extends Controller
             ];
             log::info('Contenido: d');
             $this->mailService->sendMailRegister($user_register->email, (object)$email_content);
-            //$user = User::where('email', $request->input('email'))->first();
+            $user = User::where('email', $request->input('email'))->first();
             return response()->json(['error' => false, 'code' => 29,'data' => [], 'type'=>'1','msg' => 'Procesado correctamente'], 201);
         } catch (\Exception $e) {
             //return error message
